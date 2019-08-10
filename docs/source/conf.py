@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-import sys
 import os
 import shlex
-
-# For conversion from markdown to html
-import recommonmark.parser
+import sys
 
 # Set paths
 sys.path.insert(0, os.path.abspath('.'))
@@ -21,7 +18,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'autodoc_traits',
-    'sphinx_copybutton'
+    'sphinx_copybutton',
 ]
 
 templates_path = ['_templates']
@@ -59,6 +56,16 @@ default_role = 'literal'
 
 # -- Source -------------------------------------------------------------
 
+import recommonmark
+from recommonmark.transform import AutoStructify
+
+
+def setup(app):
+    app.add_config_value('recommonmark_config', {'enable_eval_rst': True}, True)
+    app.add_stylesheet('custom.css')
+    app.add_transform(AutoStructify)
+
+
 source_parsers = {'.md': 'recommonmark.parser.CommonMarkParser'}
 
 source_suffix = ['.rst', '.md']
@@ -68,6 +75,7 @@ source_suffix = ['.rst', '.md']
 
 # The theme to use for HTML and HTML Help pages.
 import alabaster_jupyterhub
+
 html_theme = 'alabaster_jupyterhub'
 html_theme_path = [alabaster_jupyterhub.get_html_theme_path()]
 
@@ -184,9 +192,7 @@ intersphinx_mapping = {'https://docs.python.org/3/': None}
 # -- Read The Docs --------------------------------------------------------
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
-if not on_rtd:
-    html_theme = 'alabaster'
-else:
+if on_rtd:
     # readthedocs.org uses their theme by default, so no need to specify it
     # build rest-api, since RTD doesn't run make
     from subprocess import check_call as sh
